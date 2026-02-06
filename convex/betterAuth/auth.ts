@@ -19,18 +19,13 @@ export const authComponent = createClient<DataModel, typeof schema>(
 
 // Better Auth Options
 export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
+  console.log("GOOGLE_CLIENT_ID", process.env.GOOGLE_CLIENT_ID);
+  console.log("GOOGLE_CLIENT_SECRET", process.env.GOOGLE_CLIENT_SECRET);
   return {
     appName: "My App",
     baseURL: process.env.BETTER_AUTH_URL,
     secret: process.env.BETTER_AUTH_SECRET,
     database: authComponent.adapter(ctx),
-    socialProviders: {
-      google: {
-        prompt: "select_account",
-        clientId: process.env.GOOGLE_CLIENT_ID! as string,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET! as string,
-      },
-    },
     emailAndPassword: {
       enabled: true,
     },
