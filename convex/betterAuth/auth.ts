@@ -22,7 +22,8 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
   return {
     trustedOrigins: ["http://localhost:3000"],
     appName: "Blog",
-    baseURL: process.env.NEXT_PUBLIC_SITE_URL!,
+    baseURL: process.env.SITE_URL!,
+    secret: process.env.BETTER_AUTH_SECRET!,
     database: authComponent.adapter(ctx),
     socialProviders: {
       google: {
