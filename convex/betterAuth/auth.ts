@@ -26,6 +26,13 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
     baseURL: process.env.BETTER_AUTH_URL,
     secret: process.env.BETTER_AUTH_SECRET,
     database: authComponent.adapter(ctx),
+    socialProviders: {
+      google: {
+        prompt: "select_account",
+        clientId: process.env.GOOGLE_CLIENT_ID!,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      },
+    },
     emailAndPassword: {
       enabled: true,
     },

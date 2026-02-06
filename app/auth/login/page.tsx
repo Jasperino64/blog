@@ -35,7 +35,7 @@ export default function Login() {
   async function handleGoogleSignIn() {
     const data = await authClient.signIn.social({
       provider: "google",
-      callbackURL: "/dashboard",
+      callbackURL: "/",
     });
     console.log(data);
   }
