@@ -13,10 +13,12 @@ import { FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 
 export default function Login() {
+  const router = useRouter();
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -26,16 +28,19 @@ export default function Login() {
   });
 
   async function onSubmit(data: z.infer<typeof loginSchema>) {
-    await authClient.signIn.email({
+    const res = await authClient.signIn.email({
       email: data.email,
       password: data.password,
     });
+    console.log(res);
+    if (res.data?.user) {
+      router.push("/");
+    }
   }
 
   async function handleGoogleSignIn() {
     const data = await authClient.signIn.social({
       provider: "google",
-      callbackURL: "/",
     });
     console.log(data);
   }
