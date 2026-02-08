@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+// Schema for auth forms
 export const signUpSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters long").max(30),
   email: z.email("Invalid email address"),
