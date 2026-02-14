@@ -33,7 +33,6 @@ export default function SignUpPage() {
   });
 
   async function onSubmit(data: z.infer<typeof signUpSchema>) {
-    console.log(data);
     startTransition(async () => {
       await authClient.signUp.email({
         email: data.email,
@@ -57,7 +56,6 @@ export default function SignUpPage() {
       provider: "google",
       callbackURL: "/",
     });
-    console.log(data);
   }
 
   return (

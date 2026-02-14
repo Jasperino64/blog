@@ -11,18 +11,30 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "Blog | Next.js 16 Tutorial",
-  description: "Read our latest articles and insights.",
+  title: "Jasper's Blog",
+  description: "Read my latest articles and insights.",
   category: "Web development",
-  authors: [{ name: "Jan marshal" }],
+  authors: [{ name: "Jasper Chen" }],
+  generator: "Next.js",
+  keywords: ["blog", "Jasper's Blog", "Jasper Chen"],
+  openGraph: {
+    title: "Jasper's Blog",
+    description: "Read my latest articles and insights.",
+    type: "website",
+    locale: "en_US",
+    siteName: "Jasper's Blog",
+  },
 };
+
+// export const dynamic = "force-static";
+// export const revalidate = 30;
 
 export default function BlogPage() {
   return (
     <div className="py-12">
       <div className="text-center pb-12">
         <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">
-          Our Blog
+          My Blog
         </h1>
         <p className="pt-4 max-w-2xl mx-auto text-xl text-muted-foreground">
           Insights, thoughts, and trends from our team.
@@ -37,9 +49,10 @@ export default function BlogPage() {
 }
 
 async function LoadBlogList() {
-  //   "use cache";
-  //   cacheLife("hours");
-  //   cacheTag("blog");
+  "use cache";
+  cacheLife("hours");
+  cacheTag("blog");
+
   const data = await fetchQuery(api.posts.getPosts);
 
   return (

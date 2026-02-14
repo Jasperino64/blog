@@ -8,8 +8,13 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
+      {
+        protocol: "https",
+        hostname: "agile-herring-965.convex.cloud",
+      },
     ],
   },
+  cacheComponents: true,
 };
 
 export default nextConfig;

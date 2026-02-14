@@ -10,7 +10,6 @@ import { useRouter } from "next/navigation";
 export function Navbar() {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useConvexAuth();
-  console.log("isAuthenticated", isAuthenticated);
   return (
     <nav className="w-full py-5 flex items-center justify-between">
       <div className="flex items-center gap-8">

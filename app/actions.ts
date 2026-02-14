@@ -6,7 +6,8 @@ import { fetchMutation } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import { redirect } from "next/navigation";
 import { getToken } from "@/lib/auth-server";
-import { updateTag } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { commentSchema } from "./schemas/comment";
 
 export async function createBlogAction(values: z.infer<typeof postSchema>) {
   try {
@@ -17,33 +18,34 @@ export async function createBlogAction(values: z.infer<typeof postSchema>) {
     }
 
     const token = await getToken();
-    // const imageUrl = await fetchMutation(
-    //   api.posts.generateImageUploadUrl,
-    //   {},
-    //   { token }
-    // );
+    const imageUrl = await fetchMutation(
+      api.posts.generateImageUploadUrl,
+      {},
+      { token },
+    );
 
-    // const uploadResult = await fetch(imageUrl, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": parsed.data.image.type,
-    //   },
-    //   body: parsed.data.image,
-    // });
+    const uploadResult = await fetch(imageUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": parsed.data.image.type,
+      },
+      body: parsed.data.image,
+    });
 
-    // if (!uploadResult.ok) {
-    //   return {
-    //     error: "Failed to upload image",
-    //   };
-    // }
+    if (!uploadResult.ok) {
+      return {
+        error: "Failed to upload image",
+      };
+    }
 
-    // const { storageId } = await uploadResult.json();
+    const { storageId } = await uploadResult.json();
+
     await fetchMutation(
       api.posts.createPost,
       {
         body: parsed.data.content,
         title: parsed.data.title,
-        image: "storageId",
+        imageStorageId: storageId,
       },
       { token },
     );
@@ -52,8 +54,38 @@ export async function createBlogAction(values: z.infer<typeof postSchema>) {
       error: "Failed to create post",
     };
   }
-  console.log("Post created successfully");
 
+  revalidatePath("/blog");
   updateTag("blog");
+
+  return redirect("/blog");
+}
+
+export async function createCommentAction(values: z.infer<typeof commentSchema>) {
+  try {
+    const parsed = commentSchema.safeParse(values);
+
+    if (!parsed.success) {
+      throw new Error("something went wrong");
+    }
+
+    const token = await getToken();
+    await fetchMutation(
+      api.comments.createComment,
+      {
+        postId: parsed.data.postId,
+        body: parsed.data.body,
+      },
+      { token },
+    );
+  } catch {
+    return {
+      error: "Failed to create comment",
+    };
+  }
+
+  revalidatePath("/blog");
+  updateTag("blog");
+
   return redirect("/blog");
 }
