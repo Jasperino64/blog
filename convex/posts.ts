@@ -1,7 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { authComponent } from "./betterAuth/auth";
-import { Id } from "./_generated/dataModel";
+import { Doc, Id } from "./_generated/dataModel";
 
 export const createPost = mutation({
   args: {
@@ -11,7 +11,7 @@ export const createPost = mutation({
   },
   handler: async (ctx, args) => {
     const user = await authComponent.safeGetAuthUser(ctx);
-    if (!user) {
+    if (!user || user.email !== process.env.ADMIN_EMAIL) {
       throw new ConvexError("Unauthorized");
     }
     const newPostId = await ctx.db.insert("posts", {
@@ -84,5 +84,54 @@ export const generateImageUploadUrl = mutation({
       throw new ConvexError("Unauthorized");
     }
     return await ctx.storage.generateUploadUrl();
+  },
+});
+
+interface searchResult {
+  _id: Id<"posts">;
+  title: string;
+  body: string;
+}
+
+export const searchPosts = query({
+  args: {
+    queryString: v.string(),
+    limit: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const { queryString, limit } = args;
+    const results: Array<searchResult> = [];
+    const seen = new Set();
+
+    const pushDocs = async (docs: Array<Doc<"posts">>) => {
+      for (const doc of docs) {
+        if (seen.has(doc._id)) {
+          continue;
+        }
+        seen.add(doc._id);
+        results.push({ _id: doc._id, title: doc.title, body: doc.body });
+        if (results.length >= limit) {
+          break;
+        }
+      }
+    };
+
+    const titleMatches = await ctx.db
+      .query("posts")
+      .withSearchIndex("search_title", (q) => q.search("title", queryString))
+      .take(limit);
+    await pushDocs(titleMatches);
+
+    if (results.length >= limit) {
+      return results;
+    }
+
+    const bodyMatches = await ctx.db
+      .query("posts")
+      .withSearchIndex("search_body", (q) => q.search("body", queryString))
+      .take(limit);
+    await pushDocs(bodyMatches);
+
+    return results;
   },
 });

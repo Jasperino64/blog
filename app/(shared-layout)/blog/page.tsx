@@ -8,6 +8,7 @@ import { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
 import Image from "next/image";
 import Link from "next/link";
+import { connection } from "next/server";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
@@ -67,7 +68,7 @@ async function LoadBlogList() {
               }
               alt="image"
               fill
-              className="rounded-t-lg object-cover"
+              className="rounded-t-lg object-contain"
             />
           </div>
 

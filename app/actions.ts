@@ -55,13 +55,15 @@ export async function createBlogAction(values: z.infer<typeof postSchema>) {
     };
   }
 
-  revalidatePath("/blog");
+  // revalidatePath("/blog");
   updateTag("blog");
 
   return redirect("/blog");
 }
 
-export async function createCommentAction(values: z.infer<typeof commentSchema>) {
+export async function createCommentAction(
+  values: z.infer<typeof commentSchema>,
+) {
   try {
     const parsed = commentSchema.safeParse(values);
 
