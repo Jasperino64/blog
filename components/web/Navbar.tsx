@@ -12,6 +12,7 @@ export function Navbar() {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useConvexAuth();
   const { data: session } = authClient.useSession();
+  console.log(session);
   return (
     <nav className="w-full py-5 flex items-center justify-between">
       <div className="flex items-center gap-8">
