@@ -29,8 +29,8 @@ export function Navbar() {
           <Link className={buttonVariants({ variant: "ghost" })} href="/blog">
             Blog
           </Link>
-          {session?.user.role === "admin" ||
-            (session?.user.role === "owner" && (
+          {(session?.user.role === "admin" ||
+            session?.user.role === "owner") && (
               <>
                 <Link
                   className={buttonVariants({ variant: "ghost" })}
@@ -45,7 +45,7 @@ export function Navbar() {
                   Admin
                 </Link>
               </>
-            ))}
+            )}
         </div>
       </div>
       <div className="flex items-center gap-2">
