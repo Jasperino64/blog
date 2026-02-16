@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "agile-herring-965.convex.cloud",
       },
+      {
+        protocol: "https",
+        hostname: "doting-dotterel-409.convex.cloud",
+      },
     ],
   },
   cacheComponents: true,
