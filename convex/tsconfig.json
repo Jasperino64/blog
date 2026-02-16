@@ -20,6 +20,6 @@
     "isolatedModules": true,
     "noEmit": true
   },
-  "include": ["./**/*"],
+  "include": ["./**/*", "../lib/auth/permissions.ts"],
   "exclude": ["./_generated"]
 }

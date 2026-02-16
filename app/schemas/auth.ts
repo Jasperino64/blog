@@ -17,3 +17,9 @@ export const loginSchema = z.object({
     .min(6, "Password must be at least 6 characters long")
     .max(30),
 });
+
+export const updateUserSchema = z.object({
+  name: z.string().min(1, "Name is required").max(30),
+  email: z.email("Invalid email address"),
+  role: z.enum(["user", "admin", "owner"]),
+});

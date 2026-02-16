@@ -56,6 +56,8 @@ export default function SignUpPage() {
       provider: "google",
       callbackURL: "/",
     });
+    console.log(data);
+    router.push("/");
   }
 
   return (

@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 export default function Home() {
-  return <div>Index Page</div>;
+  redirect("/blog");
 }

@@ -11,6 +11,7 @@ import SearchInput from "./SearchInput";
 export function Navbar() {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useConvexAuth();
+  const { data: session, isPending: isAuthPending } = authClient.useSession();
   return (
     <nav className="w-full py-5 flex items-center justify-between">
       <div className="flex items-center gap-8">
@@ -27,9 +28,23 @@ export function Navbar() {
           <Link className={buttonVariants({ variant: "ghost" })} href="/blog">
             Blog
           </Link>
-          <Link className={buttonVariants({ variant: "ghost" })} href="/create">
-            Create
-          </Link>
+          {session?.user.role === "admin" ||
+            (session?.user.role === "owner" && (
+              <>
+                <Link
+                  className={buttonVariants({ variant: "ghost" })}
+                  href="/create"
+                >
+                  Create
+                </Link>
+                <Link
+                  className={buttonVariants({ variant: "ghost" })}
+                  href="/admin"
+                >
+                  Admin
+                </Link>
+              </>
+            ))}
         </div>
       </div>
       <div className="flex items-center gap-2">

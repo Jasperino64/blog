@@ -11,8 +11,11 @@ export const createPost = mutation({
   },
   handler: async (ctx, args) => {
     const user = await authComponent.safeGetAuthUser(ctx);
-    if (!user || user.email !== process.env.ADMIN_EMAIL) {
-      throw new ConvexError("Unauthorized");
+
+    if (!user || (user.role !== "admin" && user.role !== "owner")) {
+      throw new ConvexError(
+        "Unauthorized: You must be an admin or owner to create a post.",
+      );
     }
     const newPostId = await ctx.db.insert("posts", {
       title: args.title,
