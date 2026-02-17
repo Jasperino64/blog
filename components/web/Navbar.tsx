@@ -37,6 +37,12 @@ export function Navbar() {
           <Link className={buttonVariants({ variant: "ghost" })} href="/blog">
             Blog
           </Link>
+          <Link
+            className={buttonVariants({ variant: "ghost" })}
+            href="/images/gallery"
+          >
+            Gallery
+          </Link>
           {(session?.user.role === "admin" ||
             session?.user.role === "owner") && (
             <>
@@ -105,31 +111,22 @@ export function Navbar() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                asChild
-                className="w-full justify-center"
-              >
+              <DropdownMenuItem asChild className="w-full justify-center">
                 <Link href="/">Home</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem
-                asChild
-                className="w-full justify-center"
-              >
+              <DropdownMenuItem asChild className="w-full justify-center">
                 <Link href="/blog">Blog</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="w-full justify-center">
+                <Link href="/images/gallery">Gallery</Link>
               </DropdownMenuItem>
               {(session?.user.role === "admin" ||
                 session?.user.role === "owner") && (
                 <>
-                  <DropdownMenuItem
-                    asChild
-                    className="w-full justify-center"
-                  >
+                  <DropdownMenuItem asChild className="w-full justify-center">
                     <Link href="/create">Create</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    asChild
-                    className="w-full justify-center"
-                  >
+                  <DropdownMenuItem asChild className="w-full justify-center">
                     <Link href="/admin">Admin</Link>
                   </DropdownMenuItem>
                 </>
@@ -155,10 +152,7 @@ export function Navbar() {
                 </DropdownMenuItem>
               ) : (
                 <>
-                  <DropdownMenuItem
-                    asChild
-                    className="w-full justify-center"
-                  >
+                  <DropdownMenuItem asChild className="w-full justify-center">
                     <Link className={buttonVariants()} href="/auth/sign-up">
                       Sign Up
                     </Link>

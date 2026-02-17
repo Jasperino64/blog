@@ -81,16 +81,18 @@ export default async function PostIdRoute({ params }: PostIdRouteProps) {
       </Link>
 
       <div className="relative w-full h-[500px] mb-8 rounded-xl overflow-hidden shadow-sm">
-        <Image
-          src={
-            post.imageUrl ??
-            "https://images.unsplash.com/photo-1761019646782-4bc46ba43fe9?q=80&w=1631&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-          }
-          alt={post.title || ""}
-          fill
-          objectFit="contain"
-          className="hover:scale-105 transition-transform duration-500"
-        />
+        <Link href={post.imageUrl ?? ""}>
+          <Image
+            src={
+              post.imageUrl ??
+              "https://images.unsplash.com/photo-1761019646782-4bc46ba43fe9?q=80&w=1631&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            }
+            alt={post.title || ""}
+            fill
+            objectFit="contain"
+            className="hover:scale-105 transition-transform duration-500"
+          />
+        </Link>
       </div>
 
       <div className="space-y-4 flex flex-col">

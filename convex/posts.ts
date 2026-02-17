@@ -156,3 +156,19 @@ export const searchPosts = query({
     return results;
   },
 });
+
+export const getAllImages = query({
+  args: {},
+  handler: async (ctx) => {
+    const posts = await ctx.db.query("posts").collect();
+    const postsWithImages = posts.filter((post) => post.imageStorageId);
+
+    return await Promise.all(
+      postsWithImages.map(async (post) => ({
+        postId: post._id,
+        title: post.title,
+        imageUrl: await ctx.storage.getUrl(post.imageStorageId!),
+      })),
+    );
+  },
+});
