@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import { getToken } from "@/lib/auth-server";
 import { revalidatePath, updateTag } from "next/cache";
 import { commentSchema } from "./schemas/comment";
+import { Id } from "@/convex/_generated/dataModel";
 
 export async function createBlogAction(values: z.infer<typeof postSchema>) {
   try {
@@ -90,4 +91,24 @@ export async function createCommentAction(
   updateTag("blog");
 
   return redirect("/blog");
+}
+
+export async function deletePostAction(postId: string) {
+  try {
+    const token = await getToken();
+    await fetchMutation(
+      api.posts.deletePost,
+      { postId: postId as Id<"posts"> },
+      { token },
+    );
+  } catch {
+    return {
+      error: "Failed to delete post",
+    };
+  }
+
+  revalidatePath("/blog");
+  updateTag("blog");
+
+  return { success: true };
 }

@@ -72,8 +72,26 @@ export const deletePost = mutation({
     if (!user) {
       throw new ConvexError("Unauthorized");
     }
-    if (post?.authorId !== user._id) {
-      throw new ConvexError("Unauthorized");
+
+    if (!post) {
+      // If the post is already deleted, and we are an admin or owner, consider it a success.
+      // If we are a regular user, we can't know if we *were* the author, so we might throw or just return.
+      // Let's assume idempotency: if it's gone, it's gone.
+      return;
+    }
+
+    if (
+      post.authorId !== user._id &&
+      user.role !== "admin" &&
+      user.role !== "owner"
+    ) {
+      throw new ConvexError(
+        `You are not authorized to delete this post because you are not the author or admin, ${user.role}`,
+      );
+    }
+
+    if (post.imageStorageId) {
+      await ctx.storage.delete(post.imageStorageId);
     }
     await ctx.db.delete(args.postId);
   },

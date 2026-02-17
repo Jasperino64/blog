@@ -6,9 +6,9 @@ export default function SharedLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <div className="max-w- mx-auto px-4">
       <Navbar />
       {children}
-    </>
+    </div>
   );
 }

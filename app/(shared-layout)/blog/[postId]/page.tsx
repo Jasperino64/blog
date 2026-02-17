@@ -2,6 +2,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CommentSection } from "@/components/web/CommentSection";
+import { DeletePostButton } from "@/components/web/DeletePostButton";
 import { PostPresence } from "@/components/web/PostPresence";
 // import { CommentSection } from "@/components/web/CommentSection";
 // import { PostPresence } from "@/components/web/PostPresence";
@@ -97,12 +98,15 @@ export default async function PostIdRoute({ params }: PostIdRouteProps) {
           {post.title}
         </h1>
 
-        <div className="flex items-center gap-2">
-          <p className="text-sm text-muted-foreground">
-            Posted on:{" "}
-            {new Date(post._creationTime).toLocaleDateString("en-US")}
-          </p>
-          {userId && <PostPresence roomId={post._id} userId={userId} />}
+        <div className="flex items-center gap-2 justify-between">
+          <div className="flex items-center gap-2">
+            <p className="text-sm text-muted-foreground">
+              Posted on:{" "}
+              {new Date(post._creationTime).toLocaleDateString("en-US")}
+            </p>
+            {userId && <PostPresence roomId={post._id} userId={userId} />}
+          </div>
+          <DeletePostButton postId={post._id} authorId={post.authorId} />
         </div>
       </div>
 

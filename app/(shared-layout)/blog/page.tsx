@@ -2,6 +2,7 @@
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DeletePostButton } from "@/components/web/DeletePostButton";
 import { api } from "@/convex/_generated/api";
 import { fetchQuery } from "convex/nextjs";
 import { Metadata } from "next";
@@ -60,8 +61,13 @@ async function LoadBlogList() {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {data?.map((post) => (
-        <Card key={post._id} className="pt-0">
-          <div className="relative h-48 w-full overflow-hidden">
+        <Card key={post._id} className="pt-0 relative">
+          <DeletePostButton
+            className="absolute top-2 right-2 z-20"
+            postId={post._id}
+            authorId={post.authorId}
+          />
+          <div className="relative mt-5 h-48 w-full overflow-hidden">
             <Image
               src={
                 post.imageUrl ??
