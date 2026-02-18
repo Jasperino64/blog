@@ -19,13 +19,13 @@ export async function createBlogAction(values: z.infer<typeof postSchema>) {
     }
 
     const token = await getToken();
-    const imageUrl = await fetchMutation(
+    const coverImageUrl = await fetchMutation(
       api.posts.generateImageUploadUrl,
       {},
       { token },
     );
 
-    const uploadResult = await fetch(imageUrl, {
+    const uploadResult = await fetch(coverImageUrl, {
       method: "POST",
       headers: {
         "Content-Type": parsed.data.image.type,
@@ -39,14 +39,18 @@ export async function createBlogAction(values: z.infer<typeof postSchema>) {
       };
     }
 
-    const { storageId } = await uploadResult.json();
+    const { storageId: coverStorageId } = await uploadResult.json();
+
+    // Combine cover image ID with embedded image IDs (if any)
+    // Note: embeddedImages are already uploaded via Editor
+    const allImageIds = [coverStorageId, ...(parsed.data.embeddedImages || [])];
 
     await fetchMutation(
       api.posts.createPost,
       {
         body: parsed.data.content,
         title: parsed.data.title,
-        imageStorageId: storageId,
+        images: allImageIds,
       },
       { token },
     );

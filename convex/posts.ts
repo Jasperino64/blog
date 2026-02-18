@@ -7,7 +7,7 @@ export const createPost = mutation({
   args: {
     title: v.string(),
     body: v.string(),
-    imageStorageId: v.id("_storage"),
+    images: v.array(v.id("_storage")),
   },
   handler: async (ctx, args) => {
     const user = await authComponent.safeGetAuthUser(ctx);
@@ -21,7 +21,7 @@ export const createPost = mutation({
       title: args.title,
       body: args.body,
       authorId: user._id,
-      imageStorageId: args.imageStorageId,
+      images: args.images,
     });
     return newPostId;
   },
@@ -34,9 +34,11 @@ export const getPosts = query({
     return await Promise.all(
       posts.map(async (post) => ({
         ...post,
-        imageUrl: post.imageStorageId
-          ? await ctx.storage.getUrl(post.imageStorageId)
-          : undefined,
+        images: post.images
+          ? await Promise.all(
+              post.images.map(async (id) => await ctx.storage.getUrl(id)),
+            )
+          : [],
       })),
     );
   },
@@ -51,13 +53,15 @@ export const getPostById = query({
     if (!post) {
       return null;
     }
-    const imageUrl = post?.imageStorageId
-      ? await ctx.storage.getUrl(post.imageStorageId)
-      : null;
+    const images = post.images
+      ? await Promise.all(
+          post.images.map(async (id) => await ctx.storage.getUrl(id)),
+        )
+      : [];
 
     return {
       ...post,
-      imageUrl,
+      images,
     };
   },
 });
@@ -90,8 +94,10 @@ export const deletePost = mutation({
       );
     }
 
-    if (post.imageStorageId) {
-      await ctx.storage.delete(post.imageStorageId);
+    if (post.images) {
+      await Promise.all(
+        post.images.map(async (id) => await ctx.storage.delete(id)),
+      );
     }
     await ctx.db.delete(args.postId);
   },
@@ -157,18 +163,9 @@ export const searchPosts = query({
   },
 });
 
-export const getAllImages = query({
-  args: {},
-  handler: async (ctx) => {
-    const posts = await ctx.db.query("posts").collect();
-    const postsWithImages = posts.filter((post) => post.imageStorageId);
-
-    return await Promise.all(
-      postsWithImages.map(async (post) => ({
-        postId: post._id,
-        title: post.title,
-        imageUrl: await ctx.storage.getUrl(post.imageStorageId!),
-      })),
-    );
+export const getImageUrl = query({
+  args: { storageId: v.id("_storage") },
+  handler: async (ctx, args) => {
+    return await ctx.storage.getUrl(args.storageId);
   },
 });

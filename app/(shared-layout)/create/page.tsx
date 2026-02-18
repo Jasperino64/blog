@@ -2,6 +2,7 @@
 
 import { createBlogAction } from "@/app/actions";
 import { postSchema } from "@/app/schemas/blog";
+import Editor from "@/components/web/Editor";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,7 +18,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useTransition } from "react";
@@ -33,6 +33,7 @@ export default function CreateRoute() {
       content: "",
       title: "",
       image: undefined,
+      embeddedImages: [] as string[],
     },
   });
 
@@ -43,8 +44,14 @@ export default function CreateRoute() {
       toast.success("Post created successfully");
     });
   }
+
+  const handleImageUpload = (storageId: string) => {
+    const currentImages = form.getValues("embeddedImages") || [];
+    form.setValue("embeddedImages", [...currentImages, storageId]);
+  };
+
   return (
-    <div className="py-12">
+    <div className="py-12 w-full mx-auto">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">
           Create Post
@@ -54,7 +61,7 @@ export default function CreateRoute() {
         </p>
       </div>
 
-      <Card className="w-full max-w-xl mx-auto">
+      <Card className="w-full mx-auto">
         <CardHeader>
           <CardTitle>Create Blog Article</CardTitle>
           <CardDescription>Create a new blog article</CardDescription>
@@ -83,16 +90,16 @@ export default function CreateRoute() {
               <Controller
                 name="content"
                 control={form.control}
-                render={({ field, fieldState }) => (
+                render={({ field }) => (
                   <Field>
                     <FieldLabel>Content</FieldLabel>
-                    <Textarea
-                      aria-invalid={fieldState.invalid}
-                      placeholder="Super cool blog content"
-                      {...field}
+                    <Editor
+                      content={field.value}
+                      onChange={field.onChange}
+                      onImageUpload={handleImageUpload}
                     />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
+                    {form.formState.errors.content && (
+                      <FieldError errors={[form.formState.errors.content]} />
                     )}
                   </Field>
                 )}

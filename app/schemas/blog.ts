@@ -10,4 +10,5 @@ export const postSchema = z.object({
   image: z.instanceof(File, {
     message: "Image is required",
   }),
+  embeddedImages: z.array(z.string()).optional(),
 });

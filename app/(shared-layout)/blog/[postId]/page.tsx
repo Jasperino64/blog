@@ -1,6 +1,5 @@
 import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
 import { CommentSection } from "@/components/web/CommentSection";
 import { DeletePostButton } from "@/components/web/DeletePostButton";
 import { PostPresence } from "@/components/web/PostPresence";
@@ -15,7 +14,6 @@ import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Suspense } from "react";
 
 interface PostIdRouteProps {
   params: Promise<{
@@ -81,10 +79,10 @@ export default async function PostIdRoute({ params }: PostIdRouteProps) {
       </Link>
 
       <div className="relative w-full h-[500px] mb-8 rounded-xl overflow-hidden shadow-sm">
-        <Link href={post.imageUrl ?? ""}>
+        <Link href={post.images?.[0] ?? ""}>
           <Image
             src={
-              post.imageUrl ??
+              post.images?.[0] ??
               "https://images.unsplash.com/photo-1761019646782-4bc46ba43fe9?q=80&w=1631&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             }
             alt={post.title || ""}
@@ -114,28 +112,14 @@ export default async function PostIdRoute({ params }: PostIdRouteProps) {
 
       <Separator className="my-8" />
 
-      <p className="text-lg leading-relaxed text-foreground/90 whitespace-pre-wrap">
-        {post.body}
-      </p>
+      <div
+        className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl text-foreground/90 dark:prose-invert"
+        dangerouslySetInnerHTML={{ __html: post.body }}
+      />
 
       <Separator className="my-8" />
 
       <CommentSection preloadedComments={preloadedComments} />
-    </div>
-  );
-}
-
-function SkeletonPost() {
-  return (
-    <div className="max-w-3xl mx-auto py-8 px-4 animate-in fade-in druation-500 relative">
-      <div className="relative w-full h-[500px] mb-8 rounded-xl overflow-hidden shadow-sm">
-        <Skeleton className="w-full h-full" />
-      </div>
-
-      <div className="space-y-4 flex flex-col">
-        <Skeleton className="w-full h-12" />
-        <Skeleton className="w-1/2 h-6" />
-      </div>
     </div>
   );
 }
