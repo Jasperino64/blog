@@ -87,6 +87,9 @@ async function LoadBlogList() {
                 {post.title}
               </h1>
             </Link>
+            <p className="text-sm text-muted-foreground">
+              {new Date(post._creationTime).toLocaleDateString("en-US")}
+            </p>
             <p className="text-muted-foreground line-clamp-3">{post.body}</p>
           </CardContent>
           <CardFooter>

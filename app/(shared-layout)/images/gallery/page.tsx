@@ -5,11 +5,13 @@ import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import Image from "next/image";
 import Link from "next/link";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 
 export default function ImageGalleryPage() {
   const images = useQuery(api.posts.getAllImages);
-
+  useEffect(() => {
+    document.title = "Image Gallery";
+  }, []);
   if (images === undefined) {
     return (
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">

@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useTransition } from "react";
+import { useEffect, useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -35,6 +35,10 @@ export default function CreateRoute() {
       image: undefined,
     },
   });
+
+  useEffect(() => {
+    document.title = "Create Post";
+  }, []);
 
   function onSubmit(values: z.infer<typeof postSchema>) {
     startTransition(async () => {

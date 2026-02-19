@@ -73,6 +73,7 @@ export default function AdminPage() {
   }, [isAuthPending, session, router]);
 
   useEffect(() => {
+    document.title = "Admin";
     async function fetchUsers() {
       const { data: users, error } = await authClient.admin.listUsers({
         query: { limit: 100 },
@@ -122,16 +123,24 @@ export default function AdminPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users ? (users?.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.role}</TableCell>
+            {users ? (
+              users?.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell>{user.name}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.role}</TableCell>
+                  <TableCell>
+                    <Button onClick={() => setEditingUser(user)}>Edit</Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
                 <TableCell>
-                  <Button onClick={() => setEditingUser(user)}>Edit</Button>
+                  <Loader2 className="animate-spin" />
                 </TableCell>
               </TableRow>
-            ))): <TableRow><TableCell><Loader2 className="animate-spin" /></TableCell></TableRow>}
+            )}
           </TableBody>
         </Table>
         <form onSubmit={form.handleSubmit(onSubmit)}>
