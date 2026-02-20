@@ -9,6 +9,10 @@ import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
+import { connection } from "next/server";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Suspense } from "react";
+
 export default function Projects() {
   return (
     <>
@@ -23,12 +27,16 @@ export default function Projects() {
           Create Project
         </Link>
       </div>
-      <ProjectList />
+
+      <Suspense fallback={<SkeletonLoadingUi />}>
+        <ProjectList />
+      </Suspense>
     </>
   );
 }
 
 const ProjectList = async () => {
+  await connection();
   const data = await fetchQuery(api.projects.getProjects);
 
   return (
@@ -52,3 +60,16 @@ const ProjectList = async () => {
     </Table>
   );
 };
+
+function SkeletonLoadingUi() {
+  return (
+    <div className="flex flex-col space-y-3">
+      <Skeleton className="h-48 w-full rounded-xl" />
+      <div className="space-y-2 flex flex-col">
+        <Skeleton className="h-6 w-3/4" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-2/3" />
+      </div>
+    </div>
+  );
+}
