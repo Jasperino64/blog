@@ -90,7 +90,7 @@ export default async function PostIdRoute({ params }: PostIdRouteProps) {
       </Link>
 
       <div className="space-y-4 flex flex-col">
-        <h1 className="text-4xl font-bold tracking-tight text-foreground">
+        <h1 className="text-xl font-bold tracking-tight text-foreground">
           {project.title}
         </h1>
 
@@ -116,17 +116,15 @@ export default async function PostIdRoute({ params }: PostIdRouteProps) {
 
       <Separator className="my-8" />
 
-      <ProjectTasks projectId={projectId} preloadedTasks={preloadedTasks} />
+      <ProjectTasks preloadedTasks={preloadedTasks} />
     </div>
   );
 }
 
 const ProjectTasks = ({
-  projectId,
   preloadedTasks,
 }: {
-  projectId: Id<"projects">;
-  preloadedTasks: Preloaded<Query<"tasks.getTasksByProjectId">>;
+  preloadedTasks: Preloaded<typeof api.tasks.getTasksByProjectId>;
 }) => {
   return (
     <Suspense fallback={<div>Loading tasks...</div>}>

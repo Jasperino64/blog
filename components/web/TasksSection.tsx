@@ -16,12 +16,20 @@ import { useTransition } from "react";
 import { Separator } from "../ui/separator";
 import { taskSchema } from "@/app/schemas/task";
 import { Input } from "../ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
 
 export function TasksSection(props: {
   preloadedTasks: Preloaded<typeof api.tasks.getTasksByProjectId>;
 }) {
   const params = useParams();
+  const projectId = params.projectId as Id<"projects">;
   const data = usePreloadedQuery(props.preloadedTasks);
   const [isPending, startTransition] = useTransition();
   const createTask = useMutation(api.tasks.createTask);
@@ -42,7 +50,7 @@ export function TasksSection(props: {
   const form = useForm({
     resolver: zodResolver(taskSchema),
     defaultValues: {
-      projectId: params.projectId as Id<"projects">,
+      projectId: projectId as Id<"projects">,
       title: "",
       description: "",
     },
@@ -65,7 +73,6 @@ export function TasksSection(props: {
             control={form.control}
             render={({ field, fieldState }) => (
               <>
-
                 <FieldLabel htmlFor="title">Title</FieldLabel>
                 <Input
                   id="title"
@@ -132,7 +139,7 @@ export function TasksSection(props: {
               </TableRow>
             ))}
           </TableBody>
-        </Table >
+        </Table>
       </CardContent>
     </Card>
   );
