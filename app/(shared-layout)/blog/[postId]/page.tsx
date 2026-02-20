@@ -1,6 +1,5 @@
 import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
 import { CommentSection } from "@/components/web/CommentSection";
 import { DeletePostButton } from "@/components/web/DeletePostButton";
 import { PostPresence } from "@/components/web/PostPresence";
@@ -15,7 +14,6 @@ import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Suspense } from "react";
 
 interface PostIdRouteProps {
   params: Promise<{
@@ -121,21 +119,6 @@ export default async function PostIdRoute({ params }: PostIdRouteProps) {
       <Separator className="my-8" />
 
       <CommentSection preloadedComments={preloadedComments} />
-    </div>
-  );
-}
-
-function SkeletonPost() {
-  return (
-    <div className="max-w-3xl mx-auto py-8 px-4 animate-in fade-in druation-500 relative">
-      <div className="relative w-full h-[500px] mb-8 rounded-xl overflow-hidden shadow-sm">
-        <Skeleton className="w-full h-full" />
-      </div>
-
-      <div className="space-y-4 flex flex-col">
-        <Skeleton className="w-full h-12" />
-        <Skeleton className="w-1/2 h-6" />
-      </div>
     </div>
   );
 }

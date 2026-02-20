@@ -1,17 +1,5 @@
-import { createTaskAction } from "@/app/actions";
-import { taskSchema, TaskSchema } from "@/app/schemas/task";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Field, FieldError, FieldGroup } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { DeleteProjectButton } from "@/components/web/DeleteProjectButton";
 import { TasksSection } from "@/components/web/TasksSection";
 import { api } from "@/convex/_generated/api";
@@ -19,7 +7,6 @@ import { Id } from "@/convex/_generated/dataModel";
 import { getToken } from "@/lib/auth-server";
 import { fetchQuery, preloadQuery } from "convex/nextjs";
 import { Preloaded } from "convex/react";
-import { Query } from "convex/server";
 import { ArrowLeft } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
