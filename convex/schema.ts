@@ -16,4 +16,30 @@ export default defineSchema({
     authorName: v.string(),
     body: v.string(),
   }),
+  projects: defineTable({
+    title: v.string(),
+    description: v.string(),
+    authorId: v.string(),
+    imageStorageId: v.optional(v.id("_storage")),
+  })
+    .searchIndex("search_project_title", { searchField: "title" })
+    .searchIndex("search_project_description", { searchField: "description" }),
+  tasks: defineTable({
+    order: v.number(),
+    title: v.string(),
+    description: v.optional(v.string()),
+    projectId: v.id("projects"),
+    authorId: v.string(),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("in-progress"),
+      v.literal("done"),
+    ),
+  })
+    .searchIndex("search_task_title", { searchField: "title" })
+    .searchIndex("search_task_description", { searchField: "description" }),
+  images: defineTable({
+    storageId: v.id("_storage"),
+    url: v.string(),
+  }),
 });

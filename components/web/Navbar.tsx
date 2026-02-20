@@ -39,6 +39,12 @@ export function Navbar() {
           </Link>
           <Link
             className={buttonVariants({ variant: "ghost" })}
+            href="/projects"
+          >
+            Projects
+          </Link>
+          <Link
+            className={buttonVariants({ variant: "ghost" })}
             href="/images/gallery"
           >
             Gallery
@@ -116,6 +122,12 @@ export function Navbar() {
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="w-full justify-center">
                 <Link href="/blog">Blog</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="w-full justify-center">
+                <Link href="/projects">Projects</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="w-full justify-center">
+                <Link href="/projects/create">Create Project</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="w-full justify-center">
                 <Link href="/images/gallery">Gallery</Link>

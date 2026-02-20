@@ -10,8 +10,11 @@
 
 import type * as comments from "../comments.js";
 import type * as http from "../http.js";
+import type * as images from "../images.js";
 import type * as posts from "../posts.js";
 import type * as presence from "../presence.js";
+import type * as projects from "../projects.js";
+import type * as tasks from "../tasks.js";
 
 import type {
   ApiFromModules,
@@ -22,8 +25,11 @@ import type {
 declare const fullApi: ApiFromModules<{
   comments: typeof comments;
   http: typeof http;
+  images: typeof images;
   posts: typeof posts;
   presence: typeof presence;
+  projects: typeof projects;
+  tasks: typeof tasks;
 }>;
 
 /**
