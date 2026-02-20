@@ -193,7 +193,6 @@ export async function createTaskAction(values: z.infer<typeof taskSchema>) {
     await fetchMutation(
       api.tasks.createTask,
       {
-        order: Number(parsed.data.order),
         title: parsed.data.title,
         description: parsed.data.description,
         projectId: parsed.data.projectId as Id<"projects">,
