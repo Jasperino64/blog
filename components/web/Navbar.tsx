@@ -21,94 +21,20 @@ export function Navbar() {
   const { data: session } = authClient.useSession();
 
   return (
-    <nav className="w-full py-5 flex items-center justify-between">
-      <div className="flex items-center gap-4 md:gap-8">
+    <nav className="w-full py-5 flex flex-col md:w-64 md:h-screen md:sticky md:top-0 md:justify-start md:border-r md:pr-6 md:py-8 shrink-0 z-50 bg-background overflow-y-auto">
+      {/* Mobile Top Row / Desktop Logo */}
+      <div className="flex items-center justify-between w-full md:flex-col md:items-start md:gap-8">
         <Link href="/">
           <h1 className="text-3xl font-bold">
             Next<span className="text-primary">Pro</span>
           </h1>
         </Link>
 
-        {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-2">
-          <Link className={buttonVariants({ variant: "ghost" })} href="/">
-            Home
-          </Link>
-          <Link className={buttonVariants({ variant: "ghost" })} href="/blog">
-            Blog
-          </Link>
-          <Link
-            className={buttonVariants({ variant: "ghost" })}
-            href="/projects"
-          >
-            Projects
-          </Link>
-          <Link
-            className={buttonVariants({ variant: "ghost" })}
-            href="/images/gallery"
-          >
-            Gallery
-          </Link>
-          {(session?.user.role === "admin" ||
-            session?.user.role === "owner") && (
-            <>
-              <Link
-                className={buttonVariants({ variant: "ghost" })}
-                href="/create"
-              >
-                Create
-              </Link>
-              <Link
-                className={buttonVariants({ variant: "ghost" })}
-                href="/admin"
-              >
-                Admin
-              </Link>
-            </>
-          )}
-        </div>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <div className="ml-2 md:mr-2">
-          <SearchInput />
-        </div>
-
-        {/* Desktop Auth & Theme */}
-        <div className="hidden md:flex items-center gap-2">
-          {isLoading ? null : isAuthenticated ? (
-            <Button
-              onClick={() =>
-                authClient.signOut({
-                  fetchOptions: {
-                    onSuccess: () => {
-                      toast.success("Logged out successfully");
-                      router.push("/");
-                    },
-                    onError: (error) => {
-                      toast.error(error.error.message);
-                    },
-                  },
-                })
-              }
-            >
-              Logout
-            </Button>
-          ) : (
-            <>
-              <Link className={buttonVariants()} href="/auth/sign-up">
-                Sign Up
-              </Link>
-              <Link className={buttonVariants()} href="/auth/login">
-                Login
-              </Link>
-            </>
-          )}
-          <ThemeToggle />
-        </div>
-
-        {/* Mobile Menu */}
+        {/* Mobile Actions section */}
         <div className="md:hidden flex items-center gap-2">
+          <div className="w-28 sm:w-auto">
+            <SearchInput />
+          </div>
           <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -145,7 +71,7 @@ export function Navbar() {
               )}
               {isLoading ? null : isAuthenticated ? (
                 <DropdownMenuItem
-                  className={`${buttonVariants()} w-full justify-center`}
+                  className={`${buttonVariants()} w-full justify-center mt-2`}
                   onClick={() =>
                     authClient.signOut({
                       fetchOptions: {
@@ -164,14 +90,14 @@ export function Navbar() {
                 </DropdownMenuItem>
               ) : (
                 <>
-                  <DropdownMenuItem asChild className="w-full justify-center">
+                  <DropdownMenuItem asChild className="w-full justify-center mt-2">
                     <Link className={buttonVariants()} href="/auth/sign-up">
                       Sign Up
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     asChild
-                    className="w-full justify-center cursor-pointer"
+                    className="w-full justify-center cursor-pointer mt-2"
                   >
                     <Link className={buttonVariants()} href="/auth/login">
                       Login
@@ -181,6 +107,39 @@ export function Navbar() {
               )}
             </DropdownMenuContent>
           </DropdownMenu>
+        </div>
+      </div>
+
+      {/* Desktop Content */}
+      <div className="hidden md:flex flex-col gap-6 w-full mt-8 flex-1 pb-6">
+        <div className="w-full">
+          <SearchInput />
+        </div>
+
+        <div className="flex flex-col gap-2 w-full">
+          <Link className={`${buttonVariants({ variant: "ghost" })} w-full justify-start`} href="/">
+            Home
+          </Link>
+          <Link className={`${buttonVariants({ variant: "ghost" })} w-full justify-start`} href="/blog">
+            Blog
+          </Link>
+          <Link className={`${buttonVariants({ variant: "ghost" })} w-full justify-start`} href="/projects">
+            Projects
+          </Link>
+          <Link className={`${buttonVariants({ variant: "ghost" })} w-full justify-start`} href="/images/gallery">
+            Gallery
+          </Link>
+          {(session?.user.role === "admin" ||
+            session?.user.role === "owner") && (
+            <>
+              <Link className={`${buttonVariants({ variant: "ghost" })} w-full justify-start`} href="/create">
+                Create
+              </Link>
+              <Link className={`${buttonVariants({ variant: "ghost" })} w-full justify-start`} href="/admin">
+                Admin
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>

@@ -1,66 +1,53 @@
+"use client";
+
 import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { CommentSection } from "@/components/web/CommentSection";
 import { DeletePostButton } from "@/components/web/DeletePostButton";
 import { PostPresence } from "@/components/web/PostPresence";
-// import { CommentSection } from "@/components/web/CommentSection";
-// import { PostPresence } from "@/components/web/PostPresence";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { getToken } from "@/lib/auth-server";
-import { fetchQuery, preloadQuery } from "convex/nextjs";
+import { useQuery } from "convex/react";
 import { ArrowLeft } from "lucide-react";
-import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { useParams } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
+import { Preloaded, usePreloadedQuery } from "convex/react";
+import { useEffect } from "react";
 
-interface PostIdRouteProps {
-  params: Promise<{
-    postId: Id<"posts">;
-  }>;
-}
+export default function PostIdRoute() {
+  const params = useParams();
+  const postId = params?.postId as Id<"posts">;
 
-export async function generateMetadata({
-  params,
-}: PostIdRouteProps): Promise<Metadata> {
-  "use cache";
-  const { postId } = await params;
+  const post = useQuery(api.posts.getPostById, { postId });
+  const userId = useQuery(api.presence.getUserId);
 
-  const post = await fetchQuery(api.posts.getPostById, { postId: postId });
+  useEffect(() => {
+    if (post) {
+      document.title = post.title;
+    }
+  }, [post]);
 
-  if (!post) {
-    return {
-      title: "Post not found",
-    };
-  }
-
-  return {
-    title: post.title,
-    description: post.body,
-    authors: [{ name: "Jasper Chen" }],
-  };
-}
-
-export default async function PostIdRoute({ params }: PostIdRouteProps) {
-  const { postId } = await params;
-  const token = await getToken();
-
-  const [post, preloadedComments, userId] = await Promise.all([
-    await fetchQuery(api.posts.getPostById, { postId: postId }),
-    await preloadQuery(api.comments.getCommentsByPostId, {
-      postId: postId,
-    }),
-    await fetchQuery(api.presence.getUserId, {}, { token }),
-  ]);
-
-  if (!userId) {
-    return redirect("/auth/login");
+  if (post === undefined) {
+    return (
+      <div className="max-w-3xl mx-auto py-8 px-4">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-muted rounded w-3/4"></div>
+          <div className="h-64 bg-muted rounded"></div>
+          <div className="h-4 bg-muted rounded"></div>
+          <div className="h-4 bg-muted rounded w-5/6"></div>
+        </div>
+      </div>
+    );
   }
 
   if (!post) {
     return (
-      <div>
+      <div className="max-w-3xl mx-auto py-8 px-4">
         <h1 className="text-6xl font-extrabold text-red-500 p-20">
           No post found
         </h1>
@@ -69,7 +56,7 @@ export default async function PostIdRoute({ params }: PostIdRouteProps) {
   }
 
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4 animate-in fade-in druation-500 relative">
+    <div className="py-8 px-4 animate-in fade-in duration-500 relative">
       <Link
         className={buttonVariants({ variant: "outline", className: "mb-4" })}
         href="/blog"
@@ -78,20 +65,20 @@ export default async function PostIdRoute({ params }: PostIdRouteProps) {
         Back to blog
       </Link>
 
-      <div className="relative w-full h-[500px] mb-8 rounded-xl overflow-hidden shadow-sm">
-        <Link href={post.imageUrl ?? ""}>
-          <Image
-            src={
-              post.imageUrl ??
-              "https://images.unsplash.com/photo-1761019646782-4bc46ba43fe9?q=80&w=1631&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            }
-            alt={post.title || ""}
-            fill
-            objectFit="contain"
-            className="hover:scale-105 transition-transform duration-500"
-          />
-        </Link>
-      </div>
+      {/* Image Gallery */}
+      {post.imageUrls && post.imageUrls.length > 0 && (
+        <div className="mb-8 space-y-4">
+          {/* Main Image */}
+          <div className="relative w-full h-[500px] rounded-xl overflow-hidden shadow-sm">
+            <Image
+              src={post.imageUrls[0] ?? ""}
+              alt={post.title || ""}
+              fill
+              className="object-contain hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+        </div>
+      )}
 
       <div className="space-y-4 flex flex-col">
         <h1 className="text-4xl font-bold tracking-tight text-foreground">
@@ -112,13 +99,53 @@ export default async function PostIdRoute({ params }: PostIdRouteProps) {
 
       <Separator className="my-8" />
 
-      <p className="text-lg leading-relaxed text-foreground/90 whitespace-pre-wrap">
-        {post.body}
-      </p>
+      {/* Markdown Content */}
+      <article className="prose prose-lg max-w-none">
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeRaw, rehypeSanitize]}
+          components={{
+            img: ({ ...props }) => {
+              // Replace image-{index} references with actual uploaded image URLs
+              const src = typeof props.src === "string" ? props.src : "";
+              const match = src.match(/^image-(\d+)$/);
+              if (match) {
+                const index = parseInt(match[1]);
+                if (post.imageUrls && post.imageUrls[index]) {
+                  return (
+                    <Image
+                      src={post.imageUrls[index] ?? ""}
+                      alt={
+                        typeof props.alt === "string"
+                          ? props.alt
+                          : `Image ${index + 1}`
+                      }
+                      width={800}
+                      height={600}
+                      className="object-contain rounded-lg w-full max-h-[600px] mx-auto"
+                    />
+                  );
+                }
+              }
+              // For external images, use regular img tag
+              // eslint-disable-next-line @next/next/no-img-element
+              return (
+                <img
+                  {...props}
+                  alt={props.alt || ""}
+                  className="object-contain rounded-lg mx-auto"
+                />
+              );
+            },
+          }}
+        >
+          {post.body}
+        </ReactMarkdown>
+      </article>
 
       <Separator className="my-8" />
 
-      <CommentSection preloadedComments={preloadedComments} />
+      <CommentSection postId={postId} />
     </div>
   );
 }

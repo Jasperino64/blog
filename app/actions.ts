@@ -17,44 +17,54 @@ export async function createBlogAction(values: z.infer<typeof postSchema>) {
     const parsed = postSchema.safeParse(values);
 
     if (!parsed.success) {
-      throw new Error("something went wrong");
-    }
-
-    const token = await getToken();
-    const imageUrl = await fetchMutation(
-      api.posts.generateImageUploadUrl,
-      {},
-      { token },
-    );
-
-    const uploadResult = await fetch(imageUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": parsed.data.image.type,
-      },
-      body: parsed.data.image,
-    });
-
-    if (!uploadResult.ok) {
+      console.error("Validation error:", parsed.error);
       return {
-        error: "Failed to upload image",
+        error: `Validation failed: ${parsed.error.errors.map(e => e.message).join(", ")}`,
       };
     }
 
-    const { storageId } = await uploadResult.json();
+    const token = await getToken();
+
+    // Upload all images
+    const imageStorageIds = [];
+    for (const image of parsed.data.images) {
+      const imageUrl = await fetchMutation(
+        api.posts.generateImageUploadUrl,
+        {},
+        { token },
+      );
+
+      const uploadResult = await fetch(imageUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": image.type,
+        },
+        body: image,
+      });
+
+      if (!uploadResult.ok) {
+        return {
+          error: "Failed to upload image",
+        };
+      }
+
+      const { storageId } = await uploadResult.json();
+      imageStorageIds.push(storageId);
+    }
 
     await fetchMutation(
       api.posts.createPost,
       {
         body: parsed.data.content,
         title: parsed.data.title,
-        imageStorageId: storageId,
+        imageStorageIds,
       },
       { token },
     );
-  } catch {
+  } catch (error) {
+    console.error("Error creating post:", error);
     return {
-      error: "Failed to create post",
+      error: `Failed to create post: ${error instanceof Error ? error.message : "Unknown error"}`,
     };
   }
 

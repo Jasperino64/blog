@@ -8,8 +8,7 @@ import { FieldError, FieldLabel } from "../ui/field";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { Id } from "@/convex/_generated/dataModel";
-import { useParams } from "next/navigation";
-import { Preloaded, useMutation, usePreloadedQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -17,11 +16,10 @@ import { useTransition } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Separator } from "../ui/separator";
 
-export function CommentSection(props: {
-  preloadedComments: Preloaded<typeof api.comments.getCommentsByPostId>;
-}) {
-  const params = useParams();
-  const data = usePreloadedQuery(props.preloadedComments);
+export function CommentSection(props: { postId: Id<"posts"> }) {
+  const data = useQuery(api.comments.getCommentsByPostId, {
+    postId: props.postId,
+  });
   const [isPending, startTransition] = useTransition();
   const createComment = useMutation(api.comments.createComment);
 
@@ -41,7 +39,7 @@ export function CommentSection(props: {
   const form = useForm({
     resolver: zodResolver(commentSchema),
     defaultValues: {
-      postId: params.postId as Id<"posts">,
+      postId: props.postId,
       body: "",
     },
   });

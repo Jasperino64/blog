@@ -71,12 +71,12 @@ async function LoadBlogList() {
             <div className="relative mt-5 h-48 w-full overflow-hidden">
               <Image
                 src={
-                  post.imageUrl ??
+                  post.imageUrls?.[0] ??
                   "https://images.unsplash.com/photo-1761019646782-4bc46ba43fe9?q=80&w=1631&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 }
                 alt="image"
                 fill
-                className="rounded-t-lg object-contain"
+                className="rounded-t-lg object-cover"
               />
             </div>
           </Link>
@@ -90,7 +90,16 @@ async function LoadBlogList() {
             <p className="text-sm text-muted-foreground">
               {new Date(post._creationTime).toLocaleDateString("en-US")}
             </p>
-            <p className="text-muted-foreground line-clamp-3">{post.body}</p>
+            <p className="text-muted-foreground line-clamp-3">
+              {post.body
+                .replace(/!\[.*?\]\(.*?\)/g, "") // Remove image references
+                .replace(/\[([^\]]+)\]\([^\)]+\)/g, "$1") // Convert links to plain text
+                .replace(/#{1,6}\s/g, "") // Remove heading markers
+                .replace(/[*_~`]/g, "") // Remove bold, italic, strikethrough, code markers
+                .replace(/^[\s\->•]+/gm, "") // Remove list markers and blockquotes
+                .replace(/\n+/g, " ") // Replace newlines with spaces
+                .trim()}
+            </p>
           </CardContent>
           <CardFooter>
             <Link
