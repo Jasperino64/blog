@@ -19,7 +19,7 @@ export async function createBlogAction(values: z.infer<typeof postSchema>) {
     if (!parsed.success) {
       console.error("Validation error:", parsed.error);
       return {
-        error: `Validation failed: ${parsed.error.errors.map(e => e.message).join(", ")}`,
+        error: `Validation failed: ${parsed.error.issues.map((e) => e.message).join(", ")}`,
       };
     }
 
@@ -50,6 +50,8 @@ export async function createBlogAction(values: z.infer<typeof postSchema>) {
 
       const { storageId } = await uploadResult.json();
       imageStorageIds.push(storageId);
+
+      await fetchMutation(api.images.createImage, { storageId }, { token });
     }
 
     await fetchMutation(
@@ -164,9 +166,11 @@ export async function createProjectAction(
     }
 
     if (imageStorageId) {
-      await fetchMutation(api.images.createImage, {
-        storageId: imageStorageId,
-      });
+      await fetchMutation(
+        api.images.createImage,
+        { storageId: imageStorageId },
+        { token: await getToken() },
+      );
     }
 
     const token = await getToken();

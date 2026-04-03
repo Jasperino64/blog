@@ -88,6 +88,13 @@ export const deleteProject = mutation({
         }
 
         if (project.imageStorageId) {
+            const imageRecord = await ctx.db
+              .query("images")
+              .filter((q) => q.eq(q.field("storageId"), project.imageStorageId))
+              .first();
+            if (imageRecord) {
+              await ctx.db.delete(imageRecord._id);
+            }
             await ctx.storage.delete(project.imageStorageId);
         }
         await ctx.db.delete(args.projectId);

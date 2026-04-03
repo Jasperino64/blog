@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { CommentSection } from "@/components/web/CommentSection";
 import { DeletePostButton } from "@/components/web/DeletePostButton";
 import { PostPresence } from "@/components/web/PostPresence";
+import { ImageCarousel } from "@/components/web/ImageCarousel";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
@@ -66,19 +67,10 @@ export default function PostIdRoute() {
       </Link>
 
       {/* Image Gallery */}
-      {post.imageUrls && post.imageUrls.length > 0 && (
-        <div className="mb-8 space-y-4">
-          {/* Main Image */}
-          <div className="relative w-full h-[500px] rounded-xl overflow-hidden shadow-sm">
-            <Image
-              src={post.imageUrls[0] ?? ""}
-              alt={post.title || ""}
-              fill
-              className="object-contain hover:scale-105 transition-transform duration-500"
-            />
-          </div>
-        </div>
-      )}
+      <ImageCarousel 
+        images={(post.imageUrls?.filter(Boolean) as string[]) || []} 
+        title={post.title || ""} 
+      />
 
       <div className="space-y-4 flex flex-col">
         <h1 className="text-4xl font-bold tracking-tight text-foreground">

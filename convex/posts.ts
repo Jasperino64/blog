@@ -92,6 +92,13 @@ export const deletePost = mutation({
 
     // Delete all images associated with the post
     for (const storageId of post.imageStorageIds) {
+      const imageRecord = await ctx.db
+        .query("images")
+        .filter((q) => q.eq(q.field("storageId"), storageId))
+        .first();
+      if (imageRecord) {
+        await ctx.db.delete(imageRecord._id);
+      }
       await ctx.storage.delete(storageId);
     }
     await ctx.db.delete(args.postId);
