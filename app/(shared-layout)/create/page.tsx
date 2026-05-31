@@ -48,8 +48,39 @@ export default function CreateRoute() {
   }, []);
 
   function onSubmit(values: z.infer<typeof postSchema>) {
+    const referenceRegex = /!\[([^\]]*)\]\(image-(\d+)\)/g;
+    const keptIndices: number[] = [];
+    // Always keep the first image as the cover.
+    if (values.images.length > 0) keptIndices.push(0);
+    for (const match of values.content.matchAll(referenceRegex)) {
+      const idx = parseInt(match[2]);
+      if (!keptIndices.includes(idx)) keptIndices.push(idx);
+    }
+    keptIndices.sort((a, b) => a - b);
+
+    const indexMap = new Map<number, number>();
+    keptIndices.forEach((oldIndex, newIndex) => {
+      indexMap.set(oldIndex, newIndex);
+    });
+
+    const filteredImages = keptIndices
+      .map((i) => values.images[i])
+      .filter(Boolean);
+
+    const remappedContent = values.content.replace(
+      referenceRegex,
+      (full, alt, idx) => {
+        const newIdx = indexMap.get(parseInt(idx));
+        return newIdx === undefined ? full : `![${alt}](image-${newIdx})`;
+      },
+    );
+
     startTransition(async () => {
-      const result = await createBlogAction(values);
+      const result = await createBlogAction({
+        ...values,
+        content: remappedContent,
+        images: filteredImages,
+      });
       if (result?.error) {
         toast.error(result.error);
       } else {

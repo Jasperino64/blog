@@ -21,8 +21,10 @@ export default function ImageGalleryPage() {
   const images = useQuery(api.images.getAllImages);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [apiCarousel, setApiCarousel] = useState<CarouselApi>();
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [totalSlides, setTotalSlides] = useState(0);
+  const [, setCarouselVersion] = useState(0);
+
+  const totalSlides = apiCarousel?.scrollSnapList().length ?? 0;
+  const currentSlide = apiCarousel ? apiCarousel.selectedScrollSnap() + 1 : 0;
 
   useEffect(() => {
     document.title = "Image Gallery";
@@ -35,12 +37,14 @@ export default function ImageGalleryPage() {
   useEffect(() => {
     if (!apiCarousel) return;
 
-    setTotalSlides(apiCarousel.scrollSnapList().length);
-    setCurrentSlide(apiCarousel.selectedScrollSnap() + 1);
+    const rerender = () => setCarouselVersion((v) => v + 1);
+    apiCarousel.on("select", rerender);
+    apiCarousel.on("reInit", rerender);
 
-    apiCarousel.on("select", () => {
-      setCurrentSlide(apiCarousel.selectedScrollSnap() + 1);
-    });
+    return () => {
+      apiCarousel.off("select", rerender);
+      apiCarousel.off("reInit", rerender);
+    };
   }, [apiCarousel]);
 
   useEffect(() => {
@@ -126,7 +130,7 @@ export default function ImageGalleryPage() {
                     alt={`Gallery Image ${image._id}`}
                     width={500}
                     height={500}
-                    className="w-full h-auto object-cover transform transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-auto object-cover transform transition-transform duration-500"
                     sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   />
                 </div>

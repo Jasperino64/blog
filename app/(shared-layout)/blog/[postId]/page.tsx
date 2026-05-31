@@ -66,17 +66,11 @@ export default function PostIdRoute() {
         Back to blog
       </Link>
 
-      {/* Image Gallery */}
-      <ImageCarousel 
-        images={(post.imageUrls?.filter(Boolean) as string[]) || []} 
-        title={post.title || ""} 
-      />
-
-      <div className="space-y-4 flex flex-col">
+        <div className="space-y-4 flex flex-col">
         <h1 className="text-4xl font-bold tracking-tight text-foreground">
           {post.title}
         </h1>
-
+        
         <div className="flex items-center gap-2 justify-between">
           <div className="flex items-center gap-2">
             <p className="text-sm text-muted-foreground">
@@ -88,7 +82,17 @@ export default function PostIdRoute() {
           <DeletePostButton postId={post._id} authorId={post.authorId} />
         </div>
       </div>
-
+      <div className="flex items-center gap-2">
+        {post.imageUrls[0] && (
+          <Image
+            src={post.imageUrls[0]}
+            alt={post.title}
+            width={400}
+            height={400}
+            className="object-contain rounded-lg max-h-[400px] mx-auto"
+          />
+        )}
+      </div>
       <Separator className="my-8" />
 
       {/* Markdown Content */}
